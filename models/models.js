@@ -67,7 +67,7 @@ Product.belongsTo(Brand);
 Product.hasMany(BasketProduct);
 BasketProduct.belongsTo(Product);
 
-Product.hasMany(ProductInfo);
+Product.hasMany(ProductInfo, { as: 'info' });
 Product.belongsTo(ProductInfo);
 
 Product.hasMany(Rating);
