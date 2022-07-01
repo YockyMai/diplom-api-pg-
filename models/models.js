@@ -5,6 +5,7 @@ const User = sequelize.define('user', {
 	id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
 	email: { type: DataTypes.STRING, allowNull: false, unique: true },
 	password: { type: DataTypes.STRING, allowNull: false },
+	username: { type: DataTypes.STRING, allowNull: false },
 	role: { type: DataTypes.STRING, defaultValue: 'USER' },
 });
 
@@ -47,6 +48,11 @@ const Rating = sequelize.define('rating', {
 
 const TypeBrand = sequelize.define('type_brand', {
 	id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+});
+
+const Sizes = sequelize.define('sizes', {
+	id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+	size: { type: DataTypes.INTEGER, unique: true, allowNull: false },
 });
 
 User.hasOne(Basket);
