@@ -1,12 +1,19 @@
-const { Type, Product, ProductInfo } = require('../models/models');
+const {
+	Type,
+	Product,
+	ProductInfo,
+	Brand,
+	Sizes,
+} = require('../models/models');
 const { v4: uuidv4 } = require('uuid');
 const apiError = require('../error/apiError');
 const path = require('path');
+const { Op } = require('sequelize');
 
 class productController {
 	async create(req, res, next) {
 		try {
-			const { name, price, brandId, typeId, info } = req.body;
+			const { name, price, brandId, typeId, info, sizes } = req.body;
 			const { img } = req.files;
 
 			let fileName = uuidv4() + '.jpg'; // generate uniq filename
@@ -39,39 +46,88 @@ class productController {
 
 	async getAll(req, res, next) {
 		try {
-			const { brandId, typeId, limit, page } = req.query;
+			let {
+				brandId,
+				typeId,
+				limit,
+				page,
+				minPrice,
+				maxPrice,
+				searchValue,
+			} = req.query;
 
-			page = page | 1;
-			limit = limit | 10;
+			page = page || 1;
+			limit = limit || 10;
+			minPrice = minPrice || 0;
+			maxPrice = maxPrice || 100000;
 			let offset = limit * page - limit;
 
 			let products;
-
+			// TODO: Зделать посик по символам
 			if (!brandId && !typeId) {
-				products = await Product.findAndCountAll({ limit, offset }); // resposing all counts of products
+				products = await Product.findAndCountAll({
+					limit,
+					offset,
+					include: [{ model: Type }, { model: Brand }],
+					where: {
+						price: {
+							[Op.between]: [minPrice, maxPrice],
+						},
+					},
+				}); // resposing all counts of products
 			}
 
 			if (brandId && !typeId) {
 				products = await Product.findAndCountAll({
-					where: { brandId, limit, offset },
+					where: {
+						brandId,
+						price: {
+							//[Op.lt]: maxPrice, // меньше чем
+							//[Op.gt]: minPrice, // больше чем
+
+							[Op.between]: [minPrice, maxPrice],
+						},
+					},
+					include: [{ model: Type }, { model: Brand }],
+					distinct: true,
+					limit,
+					offset,
 				});
 			}
 
 			if (!brandId && typeId) {
 				products = await Product.findAndCountAll({
-					where: { typeId, limit, offset },
+					where: {
+						typeId,
+						price: {
+							[Op.between]: [minPrice, maxPrice],
+						},
+					},
+					include: [{ model: Type }, { model: Brand }],
+					limit,
+					offset,
 				});
 			}
 
 			if (brandId && typeId) {
 				products = await Product.findAndCountAll({
-					where: { typeId, brandId, limit, offset },
+					where: {
+						typeId,
+						brandId,
+						price: {
+							[Op.between]: [minPrice, maxPrice],
+						},
+					},
+					include: [{ model: Type }, { model: Brand }],
+					limit,
+					offset,
 				});
 			}
 
 			return res.json(products);
 		} catch (error) {
 			next(apiError.badRequest(error.message));
+			console.log(error);
 		}
 	}
 
@@ -81,7 +137,12 @@ class productController {
 
 			const product = await Product.findOne({
 				where: { id },
-				include: [{ model: ProductInfo, as: 'info' }], //left join
+				include: [
+					{ model: ProductInfo, as: 'info' },
+					{ model: Sizes, as: 'sizes' },
+					{ model: Type },
+					{ model: Brand },
+				], //left join
 			});
 
 			return res.json(product);

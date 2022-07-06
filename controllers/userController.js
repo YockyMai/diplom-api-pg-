@@ -40,19 +40,22 @@ class userController {
 
 			let hashPassowrd = bcrypt.hashSync(password, 5);
 
-			const user = User.create({
+			const user = await User.create({
 				email,
 				role,
 				username,
 				password: hashPassowrd,
 			});
 			const basket = Basket.create({ userId: user.id });
-			const token = generateJwt(user.id, user.email, user.role);
+
+			const token = generateJwt(
+				user.id,
+				user.email,
+				user.role,
+				user.username,
+			);
 
 			return res.json({
-				id: user.id,
-				email: user.email,
-				role: user.role,
 				token,
 			});
 		} catch (error) {
