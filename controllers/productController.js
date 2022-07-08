@@ -4,6 +4,7 @@ const {
 	ProductInfo,
 	Brand,
 	Sizes,
+	ProductSize,
 } = require('../models/models');
 const { v4: uuidv4 } = require('uuid');
 const apiError = require('../error/apiError');
@@ -54,6 +55,7 @@ class productController {
 				minPrice,
 				maxPrice,
 				searchValue,
+				sizeId,
 			} = req.query;
 
 			page = page || 1;
@@ -68,7 +70,17 @@ class productController {
 				products = await Product.findAndCountAll({
 					limit,
 					offset,
-					include: [{ model: Type }, { model: Brand }],
+					include: [
+						{ model: Type },
+						{ model: Brand },
+						{
+							model: ProductSize,
+							as: 'sizes',
+							include: {
+								model: Sizes,
+							},
+						},
+					],
 					where: {
 						price: {
 							[Op.between]: [minPrice, maxPrice],
@@ -88,7 +100,18 @@ class productController {
 							[Op.between]: [minPrice, maxPrice],
 						},
 					},
-					include: [{ model: Type }, { model: Brand }],
+					include: [
+						{ model: Type },
+						{ model: Brand },
+
+						{
+							model: ProductSize,
+							as: 'sizes',
+							include: {
+								model: Sizes,
+							},
+						},
+					],
 					distinct: true,
 					limit,
 					offset,
@@ -103,7 +126,17 @@ class productController {
 							[Op.between]: [minPrice, maxPrice],
 						},
 					},
-					include: [{ model: Type }, { model: Brand }],
+					include: [
+						{ model: Type },
+						{ model: Brand },
+						{
+							model: ProductSize,
+							as: 'sizes',
+							include: {
+								model: Sizes,
+							},
+						},
+					],
 					limit,
 					offset,
 				});
@@ -118,7 +151,17 @@ class productController {
 							[Op.between]: [minPrice, maxPrice],
 						},
 					},
-					include: [{ model: Type }, { model: Brand }],
+					include: [
+						{ model: Type },
+						{ model: Brand },
+						{
+							model: ProductSize,
+							as: 'sizes',
+							include: {
+								model: Sizes,
+							},
+						},
+					],
 					limit,
 					offset,
 				});
@@ -139,7 +182,13 @@ class productController {
 				where: { id },
 				include: [
 					{ model: ProductInfo, as: 'info' },
-					{ model: Sizes, as: 'sizes' },
+					{
+						model: ProductSize,
+						as: 'sizes',
+						include: {
+							model: Sizes,
+						},
+					},
 					{ model: Type },
 					{ model: Brand },
 				], //left join

@@ -1,22 +1,42 @@
-const { Sizes } = require('../models/models');
+const { Sizes, ProductSize, Product } = require('../models/models');
 
 class sizesController {
 	async create(req, res) {
-		const { sizes, productId } = req.body;
+		const { productId, sizesData } = req.body;
 
-		if (productId && sizes) {
-			sizes.forEach(async size => {
-				const sizeCandidat = await Sizes.findAll({
+		// sizesInfo {
+		// 	[{
+		// 		sizeId,
+		// 		count
+		// 	}]
+		// }
+
+		if (productId) {
+			sizesData.forEach(async sizeObj => {
+				const sizeCandidate = await ProductSize.findOne({
 					where: {
 						productId,
-						size,
+						sizeId: sizeObj.sizeId,
 					},
 				});
 
-				console.log(sizeCandidat);
+				if (!sizeCandidate) {
+					const productSize = await ProductSize.create({
+						sizeId: sizeObj.sizeId,
+						count: sizeObj.count,
+						productId: productId,
+					});
 
-				if (sizeCandidat.length <= 0) {
-					Sizes.create({ size, productId });
+					Product.update(
+						{
+							productSizeId: productSize.id,
+						},
+						{
+							where: {
+								id: productId,
+							},
+						},
+					);
 				}
 			});
 

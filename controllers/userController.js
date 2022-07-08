@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const apiError = require('../error/apiError');
-const { User, Basket } = require('../models/models');
+const { User, Basket, Order } = require('../models/models');
 
 const generateJwt = (id, email, role, username) => {
 	return jwt.sign(
@@ -46,7 +46,7 @@ class userController {
 				username,
 				password: hashPassowrd,
 			});
-			const basket = Basket.create({ userId: user.id });
+			Basket.create({ userId: user.id });
 
 			const token = generateJwt(
 				user.id,

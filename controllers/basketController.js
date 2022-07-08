@@ -5,39 +5,41 @@ const {
 	ProductInfo,
 	Brand,
 	Type,
+	Sizes,
 } = require('../models/models');
 
 class basketController {
 	async create(req, res, next) {
 		try {
-			const { productId } = req.body;
+			const { productId, sizeId } = req.body;
 
-			await BasketProduct.create({
+			BasketProduct.create({
 				basketId: req.user.id,
 				productId,
-			});
-
-			const basket = await BasketProduct.findOne({
-				where: { basketId: req.user.id },
-				attributes: {
-					exclude: ['productId', 'basketId'], //exclude : исключить поля
-				},
-				include: [
-					{
-						model: Product,
-						include: [
-							{ model: ProductInfo, as: 'info' },
-							{ model: Brand },
-							{ model: Type },
-						],
-						where: {
-							id: productId,
-						},
+				sizeId,
+			}).then(async () => {
+				const basket = await BasketProduct.findOne({
+					where: { basketId: req.user.id },
+					attributes: {
+						exclude: ['productId', 'basketId'], //exclude : исключить поля
 					},
-				],
+					include: [
+						{
+							model: Product,
+							include: [
+								{ model: ProductInfo, as: 'info' },
+								{ model: Brand },
+								{ model: Type },
+							],
+							where: {
+								id: productId,
+							},
+						},
+						{ model: Sizes },
+					],
+				});
+				return res.json(basket);
 			});
-
-			return res.json(basket);
 		} catch (error) {
 			next(apiError(400, '31134413'));
 		}
@@ -63,11 +65,13 @@ class basketController {
 							{ model: Type },
 						],
 					},
+					{ model: Sizes },
 				],
 			});
 
 			return res.json(basket);
 		} catch (error) {
+			console.log(error);
 			next(apiError(400, '31134413'));
 		}
 	}
