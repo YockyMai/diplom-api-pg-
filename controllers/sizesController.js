@@ -37,6 +37,31 @@ class sizesController {
 							},
 						},
 					);
+				} else {
+					const productSize = await ProductSize.update(
+						{
+							sizeId: sizeObj.sizeId,
+							count: sizeObj.count,
+							productId: productId,
+						},
+						{
+							where: {
+								sizeId: sizeObj.sizeId,
+								productId: productId,
+							},
+						},
+					);
+
+					Product.update(
+						{
+							productSizeId: productSize.id,
+						},
+						{
+							where: {
+								id: productId,
+							},
+						},
+					);
 				}
 			});
 

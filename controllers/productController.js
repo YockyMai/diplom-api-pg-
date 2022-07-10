@@ -70,6 +70,7 @@ class productController {
 				products = await Product.findAndCountAll({
 					limit,
 					offset,
+					distinct: 'id',
 					include: [
 						{ model: Type },
 						{ model: Brand },
@@ -78,6 +79,16 @@ class productController {
 							as: 'sizes',
 							include: {
 								model: Sizes,
+							},
+							where: {
+								count: {
+									[Op.gt]: 0,
+								},
+								sizeId: {
+									[sizeId ? Op.eq : Op.gt]: sizeId
+										? sizeId
+										: 0,
+								},
 							},
 						},
 					],
@@ -110,9 +121,19 @@ class productController {
 							include: {
 								model: Sizes,
 							},
+							where: {
+								count: {
+									[Op.gt]: 0,
+								},
+								sizeId: {
+									[sizeId ? Op.eq : Op.gt]: sizeId
+										? sizeId
+										: 0,
+								},
+							},
 						},
 					],
-					distinct: true,
+					distinct: 'id',
 					limit,
 					offset,
 				});
@@ -135,8 +156,19 @@ class productController {
 							include: {
 								model: Sizes,
 							},
+							where: {
+								count: {
+									[Op.gt]: 0,
+								},
+								sizeId: {
+									[sizeId ? Op.eq : Op.gt]: sizeId
+										? sizeId
+										: 0,
+								},
+							},
 						},
 					],
+					distinct: 'id',
 					limit,
 					offset,
 				});
@@ -160,8 +192,19 @@ class productController {
 							include: {
 								model: Sizes,
 							},
+							where: {
+								count: {
+									[Op.gt]: 0,
+								},
+								sizeId: {
+									[sizeId ? Op.eq : Op.gt]: sizeId
+										? sizeId
+										: 0,
+								},
+							},
 						},
 					],
+					distinct: 'id',
 					limit,
 					offset,
 				});

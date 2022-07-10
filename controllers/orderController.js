@@ -45,6 +45,8 @@ class orderController {
 				},
 			});
 
+			console.log(basket);
+
 			BasketProduct.destroy({
 				where: {
 					basketId: basket.id,

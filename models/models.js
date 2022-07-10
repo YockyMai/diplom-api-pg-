@@ -75,6 +75,16 @@ const OrderProducts = sequelize.define('order_products', {
 	id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
 });
 
+const Comment = sequelize.define('comment', {
+	id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+	value: { type: DataTypes.STRING, require: true },
+});
+
+User.hasMany(Comment);
+Product.hasMany(Comment);
+Comment.belongsTo(User);
+Comment.belongsTo(Product);
+
 Product.hasMany(OrderProducts);
 OrderProducts.belongsTo(Product);
 
@@ -134,4 +144,5 @@ module.exports = {
 	ProductSize,
 	Order,
 	OrderProducts,
+	Comment,
 };
