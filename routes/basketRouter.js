@@ -6,5 +6,6 @@ const router = new Router();
 
 router.post('/create', authMiddleware, basketController.create);
 router.get('/:id', authMiddleware, basketController.getOne);
+router.post('/deleteOne', authMiddleware, basketController.deleteOne);
 
 module.exports = router;

@@ -77,7 +77,7 @@ const OrderProducts = sequelize.define('order_products', {
 
 const Comment = sequelize.define('comment', {
 	id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-	value: { type: DataTypes.STRING, require: true },
+	value: { type: DataTypes.TEXT, require: true },
 });
 
 User.hasMany(Comment);

@@ -5,11 +5,12 @@ const {
 	Brand,
 	Sizes,
 	ProductSize,
+	Rating,
 } = require('../models/models');
 const { v4: uuidv4 } = require('uuid');
 const apiError = require('../error/apiError');
 const path = require('path');
-const { Op } = require('sequelize');
+const { Op, literal } = require('sequelize');
 
 class productController {
 	async create(req, res, next) {
@@ -214,6 +215,39 @@ class productController {
 		} catch (error) {
 			next(apiError.badRequest(error.message));
 			console.log(error);
+		}
+	}
+
+	async addRating(req, res, next) {
+		try {
+			const { rate, productId } = req.body;
+
+			const candidate = await Rating.findOne({
+				where: {
+					userId: req.user.id,
+				},
+			});
+
+			if (candidate) {
+				return next(apiError.internal('Оценка уже поставлена'));
+			}
+
+			const rating = await Rating.create({
+				userId: req.user.id,
+				productId,
+				rate,
+			});
+
+			const count = await Rating.count({ where: { productId } });
+
+			Product.update(
+				{ rating: literal('rating + 1') },
+				{ where: { id: productId } },
+			);
+
+			const ratingCount = req;
+		} catch (error) {
+			next(apiError.badRequest(error.message));
 		}
 	}
 

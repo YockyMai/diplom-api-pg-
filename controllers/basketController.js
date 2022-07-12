@@ -45,6 +45,21 @@ class basketController {
 		}
 	}
 
+	async deleteOne(req, res, next) {
+		try {
+			const { id } = req.body;
+
+			BasketProduct.destroy({
+				where: { id },
+			});
+
+			return res.json({ status: 'ok' });
+		} catch (error) {
+			console.log(error);
+			next(apiError(400, 'failed'));
+		}
+	}
+
 	async getOne(req, res, next) {
 		try {
 			const { id } = req.params;

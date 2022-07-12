@@ -1,10 +1,10 @@
 const apiError = require('../error/apiError');
-const { Comment, User } = require('../models/models');
+const { Comment, User, Rating } = require('../models/models');
 
 class CommentController {
 	async create(req, res, next) {
 		try {
-			const { value, productId } = req.body;
+			const { value, productId, rating } = req.body;
 
 			const createdComment = await Comment.create(
 				{
