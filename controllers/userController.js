@@ -13,7 +13,7 @@ const generateJwt = (id, email, role, username) => {
 			username,
 		},
 		process.env.JWT_SECRET_KEY,
-		{ expiresIn: '24h' },
+		{ expiresIn: '6d' },
 	);
 };
 

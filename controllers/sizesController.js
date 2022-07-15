@@ -3,14 +3,6 @@ const { Sizes, ProductSize, Product } = require('../models/models');
 class sizesController {
 	async create(req, res) {
 		const { productId, sizesData } = req.body;
-
-		// sizesInfo {
-		// 	[{
-		// 		sizeId,
-		// 		count
-		// 	}]
-		// }
-
 		if (productId) {
 			sizesData.forEach(async sizeObj => {
 				const sizeCandidate = await ProductSize.findOne({
@@ -69,7 +61,11 @@ class sizesController {
 		}
 	}
 
-	async getAll(req, res) {}
+	async getAll(req, res) {
+		const sizes = await Sizes.findAll();
+
+		return res.json(sizes);
+	}
 }
 
 module.exports = new sizesController();

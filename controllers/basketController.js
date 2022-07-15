@@ -55,7 +55,6 @@ class basketController {
 
 			return res.json({ status: 'ok' });
 		} catch (error) {
-			console.log(error);
 			next(apiError(400, 'failed'));
 		}
 	}

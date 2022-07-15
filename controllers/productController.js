@@ -10,16 +10,16 @@ const {
 const { v4: uuidv4 } = require('uuid');
 const apiError = require('../error/apiError');
 const path = require('path');
-const { Op, literal } = require('sequelize');
+const { Op, literal, fn, col } = require('sequelize');
 
 class productController {
 	async create(req, res, next) {
 		try {
-			const { name, price, brandId, typeId, info, sizes } = req.body;
-			const { img } = req.files;
+			const { name, price, brandId, typeId, info, fileName } = req.body;
+			// const { img } = req.files;
 
-			let fileName = uuidv4() + '.jpg'; // generate uniq filename
-			img.mv(path.resolve(__dirname, '..', 'static', fileName)); // move file in a static folder, * __dirname - current loication, next params - path to static folder *
+			// let fileName = uuidv4() + '.jpg'; // generate uniq filename
+			// img.mv(path.resolve(__dirname, '..', 'static', fileName)); // move file in a static folder, * __dirname - current loication, next params - path to static folder *
 
 			const product = await Product.create({
 				name,
@@ -30,8 +30,8 @@ class productController {
 			});
 
 			if (info) {
-				info = JSON.parse(info); // form data not auto-parcing in json
-				info.forEach(infoEl => {
+				const parcedInfo = JSON.parse(info); // form data not auto-parcing in json
+				parcedInfo.forEach(infoEl => {
 					ProductInfo.create({
 						title: infoEl.title,
 						description: infoEl.description,
@@ -42,6 +42,7 @@ class productController {
 
 			return res.json(product);
 		} catch (error) {
+			console.log(error);
 			next(apiError.badRequest(error.message));
 		}
 	}
@@ -225,6 +226,7 @@ class productController {
 			const candidate = await Rating.findOne({
 				where: {
 					userId: req.user.id,
+					productId,
 				},
 			});
 
@@ -239,13 +241,37 @@ class productController {
 			});
 
 			const count = await Rating.count({ where: { productId } });
+			const sum = await Rating.sum('rate', { where: { productId } });
+
+			const updatedRating = sum / count;
 
 			Product.update(
-				{ rating: literal('rating + 1') },
+				{ rating: updatedRating },
 				{ where: { id: productId } },
 			);
 
-			const ratingCount = req;
+			return res.json({ status: 'ok' });
+		} catch (error) {
+			next(apiError.badRequest(error.message));
+		}
+	}
+
+	async checkRatingAccess(req, res, next) {
+		try {
+			const { productId } = req.params;
+
+			const candidate = await Rating.findOne({
+				where: {
+					userId: req.user.id,
+					productId,
+				},
+			});
+
+			if (candidate) {
+				return next(apiError.internal('Оценка уже поставлена'));
+			}
+
+			return res.json('ok');
 		} catch (error) {
 			next(apiError.badRequest(error.message));
 		}
@@ -274,6 +300,33 @@ class productController {
 			return res.json(product);
 		} catch (error) {
 			next(apiError.badRequest(error.message));
+		}
+	}
+
+	async uploadImage(req, res, next) {
+		try {
+			const { img } = req.files;
+
+			let fileName = uuidv4() + '.jpg';
+			img.mv(path.resolve(__dirname, '..', 'static', fileName));
+
+			return res.json(fileName);
+		} catch (error) {
+			return next(apiError.internal(error));
+		}
+	}
+
+	async getProductInfo(req, res, next) {
+		try {
+			const { productId } = req.params;
+
+			const productInfo = await ProductInfo.findAll({
+				where: { productId },
+			});
+
+			return res.json(productInfo);
+		} catch (error) {
+			return next(apiError.internal(error));
 		}
 	}
 }
