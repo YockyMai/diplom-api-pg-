@@ -11,6 +11,7 @@ const { v4: uuidv4 } = require('uuid');
 const apiError = require('../error/apiError');
 const path = require('path');
 const { Op, literal, fn, col } = require('sequelize');
+const { group } = require('console');
 
 class productController {
 	async create(req, res, next) {
@@ -58,12 +59,15 @@ class productController {
 				maxPrice,
 				searchValue,
 				sizeId,
+				order,
 			} = req.query;
 
 			page = page || 1;
 			limit = limit || 10;
 			minPrice = minPrice || 0;
 			maxPrice = maxPrice || 100000;
+			order = order || 'priceDESC';
+
 			let offset = limit * page - limit;
 
 			let products;
@@ -73,6 +77,15 @@ class productController {
 					limit,
 					offset,
 					distinct: 'id',
+					order: [
+						order === 'priceDESC'
+							? ['price', 'DESC']
+							: order === 'priceASC'
+							? ['price', 'ASC']
+							: order === 'ratingDESC'
+							? ['rating', 'DESC']
+							: order === 'ratingASC' && ['rating', 'ASC'],
+					],
 					include: [
 						{ model: Type },
 						{ model: Brand },
@@ -107,12 +120,18 @@ class productController {
 					where: {
 						brandId,
 						price: {
-							//[Op.lt]: maxPrice, // меньше чем
-							//[Op.gt]: minPrice, // больше чем
-
 							[Op.between]: [minPrice, maxPrice],
 						},
 					},
+					order: [
+						order === 'priceDESC'
+							? ['price', 'DESC']
+							: order === 'priceASC'
+							? ['price', 'ASC']
+							: order === 'ratingDESC'
+							? ['rating', 'DESC']
+							: order === 'ratingASC' && ['rating', 'ASC'],
+					],
 					include: [
 						{ model: Type },
 						{ model: Brand },
@@ -149,6 +168,15 @@ class productController {
 							[Op.between]: [minPrice, maxPrice],
 						},
 					},
+					order: [
+						order === 'priceDESC'
+							? ['price', 'DESC']
+							: order === 'priceASC'
+							? ['price', 'ASC']
+							: order === 'ratingDESC'
+							? ['rating', 'DESC']
+							: order === 'ratingASC' && ['rating', 'ASC'],
+					],
 					include: [
 						{ model: Type },
 						{ model: Brand },
@@ -185,6 +213,15 @@ class productController {
 							[Op.between]: [minPrice, maxPrice],
 						},
 					},
+					order: [
+						order === 'priceDESC'
+							? ['price', 'DESC']
+							: order === 'priceASC'
+							? ['price', 'ASC']
+							: order === 'ratingDESC'
+							? ['rating', 'DESC']
+							: order === 'ratingASC' && ['rating', 'ASC'],
+					],
 					include: [
 						{ model: Type },
 						{ model: Brand },

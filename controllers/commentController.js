@@ -54,6 +54,20 @@ class CommentController {
 			next(apiError.badRequest(error.message));
 		}
 	}
+
+	async getCommentStars(req, res, next) {
+		try {
+			const { productId, userId } = req.params;
+
+			const stars = await Rating.findOne({
+				where: { productId, userId },
+			});
+
+			return res.json(stars);
+		} catch (error) {
+			next(apiError.badRequest(error.message));
+		}
+	}
 }
 
 module.exports = new CommentController();
