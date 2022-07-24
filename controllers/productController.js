@@ -10,7 +10,8 @@ const {
 const { v4: uuidv4 } = require('uuid');
 const apiError = require('../error/apiError');
 const path = require('path');
-const { Op, literal, fn, col } = require('sequelize');
+const { Op, literal, fn, col, where } = require('sequelize');
+const Sequelize = require('sequelize');
 const { group } = require('console');
 
 class productController {
@@ -48,6 +49,35 @@ class productController {
 		}
 	}
 
+	async getAllByTextSearch(req, res) {
+		try {
+			let { query, sector } = req.query;
+
+			sector = sector || 1;
+			query = query.toLowerCase();
+
+			let limit = 10;
+			let offset = limit * sector - limit;
+
+			const products = await Product.findAll({
+				limit,
+				offset,
+				where: {
+					name: Sequelize.where(
+						Sequelize.fn('LOWER', Sequelize.col('product.name')),
+						'LIKE',
+						'%' + query + '%',
+					),
+				},
+				include: [{ model: Type }, { model: Brand }, { model: Rating }],
+			});
+
+			return res.json(products);
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
 	async getAll(req, res, next) {
 		try {
 			let {
@@ -57,7 +87,6 @@ class productController {
 				page,
 				minPrice,
 				maxPrice,
-				searchValue,
 				sizeId,
 				order,
 			} = req.query;
@@ -71,7 +100,7 @@ class productController {
 			let offset = limit * page - limit;
 
 			let products;
-			// TODO: Зделать посик по символам
+
 			if (!brandId && !typeId) {
 				products = await Product.findAndCountAll({
 					limit,

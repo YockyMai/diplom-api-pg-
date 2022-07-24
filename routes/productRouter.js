@@ -5,6 +5,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 const checkRoleMiddleware = require('../middleware/checkRoleMiddleware');
 
 router.post('/uploadimage', authMiddleware, productController.uploadImage);
+router.get('/search', productController.getAllByTextSearch);
 router.post('/', productController.create);
 router.get('/', productController.getAll);
 router.get('/:id', productController.getOne);
@@ -14,7 +15,6 @@ router.post(
 	authMiddleware,
 	productController.checkRatingAccess,
 );
-
 router.get('/info/:productId', productController.getProductInfo);
 
 module.exports = router;
