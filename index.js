@@ -31,7 +31,7 @@ const start = async () => {
 			console.log(`SERVER STARTED ON ${PORT} PORT`);
 		});
 	} catch (error) {
-		console.error('Unable to connect to the database:', error);
+		console.error('Unable to connect to the database', error);
 	}
 };
 
