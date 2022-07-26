@@ -395,6 +395,22 @@ class productController {
 			return next(apiError.internal(error));
 		}
 	}
+
+	async deleteProduct(req, res, next) {
+		try {
+			const { productId } = req.body;
+
+			const status = await Product.destroy({ where: { id: productId } });
+
+			if (status != 1) {
+				return next(apiError.internal('Ошибка'));
+			}
+
+			return res.json({ message: 'Успешно' });
+		} catch (error) {
+			return next(apiError.internal(error));
+		}
+	}
 }
 
 module.exports = new productController();
