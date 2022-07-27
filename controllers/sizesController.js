@@ -61,6 +61,27 @@ class sizesController {
 		}
 	}
 
+	async createIntance(req, res) {
+		const { size } = req.body;
+
+		const canditade = await Sizes.findOne({ where: { size } });
+
+		console.log(canditade);
+		if (canditade) {
+			return res.json({
+				message: `Такой размер уже существует в базе данных`,
+				status: 'error',
+			});
+		}
+
+		Sizes.create({ size });
+
+		return res.json({
+			message: `Экземпляр размера успешно создан!`,
+			status: 'ok',
+		});
+	}
+
 	async getAll(req, res) {
 		const sizes = await Sizes.findAll();
 
