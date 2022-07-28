@@ -376,9 +376,36 @@ class productController {
 			let fileName = uuidv4() + '.jpg';
 			img.mv(path.resolve(__dirname, '..', 'static', fileName));
 
-			return res.json(fileName);
+			cloudinary.uploader.upload(
+				path.resolve(__dirname, '..', 'static', fileName),
+				function (error, result) {
+					return res.json(result.url);
+				},
+			);
 		} catch (error) {
 			return next(apiError.internal(error));
+		}
+	}
+
+	async updateImage(req, res, next) {
+		try {
+			const { productId, fileName } = req.body;
+
+			const product = await Product.update(
+				{
+					img: fileName,
+				},
+				{
+					where: {
+						id: productId,
+					},
+				},
+			);
+
+			return res.json(product);
+		} catch (error) {
+			console.log(error);
+			next(apiError.badRequest(error.message));
 		}
 	}
 
