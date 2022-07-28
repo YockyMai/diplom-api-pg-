@@ -13,6 +13,7 @@ const path = require('path');
 const { Op, literal, fn, col, where } = require('sequelize');
 const Sequelize = require('sequelize');
 const { group } = require('console');
+const cloudinary = require('cloudinary').v2;
 
 class productController {
 	async create(req, res, next) {
