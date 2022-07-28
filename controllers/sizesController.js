@@ -69,7 +69,7 @@ class sizesController {
 		console.log(canditade);
 		if (canditade) {
 			return res.json({
-				message: `Такой размер уже существует в базе данных`,
+				message: `Такой размер уже существует в базе данных!`,
 				status: 'error',
 			});
 		}
