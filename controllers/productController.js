@@ -10,7 +10,7 @@ const {
 const { v4: uuidv4 } = require('uuid');
 const apiError = require('../error/apiError');
 const path = require('path');
-const { Op, literal, fn, col, where } = require('sequelize');
+const { Op } = require('sequelize');
 const Sequelize = require('sequelize');
 const { group } = require('console');
 const cloudinary = require('cloudinary').v2;

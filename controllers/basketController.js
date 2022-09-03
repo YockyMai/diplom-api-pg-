@@ -19,7 +19,7 @@ class basketController {
 				sizeId,
 			}).then(async () => {
 				const basket = await BasketProduct.findOne({
-					where: { basketId: req.user.id },
+					where: { basketId: req.user.id, sizeId },
 					attributes: {
 						exclude: ['productId', 'basketId'], //exclude : исключить поля
 					},
@@ -35,7 +35,9 @@ class basketController {
 								id: productId,
 							},
 						},
-						{ model: Sizes },
+						{
+							model: Sizes,
+						},
 					],
 				});
 				return res.json(basket);
