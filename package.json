@@ -14,11 +14,13 @@
 		"express": "^4.18.1",
 		"express-fileupload": "^1.4.0",
 		"jsonwebtoken": "^8.5.1",
+		"leven": "3.1.0",
 		"nodemon": "^2.0.18",
 		"pg": "^8.7.3",
 		"pg-hstore": "^2.3.4",
 		"sequelize": "^6.21.2",
 		"sequelize-cli": "^6.4.1",
+		"soundex-code": "^2.0.1",
 		"uuid": "^8.3.2"
 	}
 }

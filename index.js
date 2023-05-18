@@ -10,7 +10,7 @@ const models = require('./models/models');
 const router = require('./routes');
 const errorHandler = require('./middleware/errorHandlingMiddleware');
 
-const PORT = process.env.PORT || 5432;
+const PORT = 3001;
 
 const app = express();
 

@@ -6,6 +6,7 @@ const checkRoleMiddleware = require('../middleware/checkRoleMiddleware');
 
 router.post('/uploadimage', authMiddleware, productController.uploadImage);
 router.post('/updateimage', productController.updateImage);
+router.post('/edit', productController.edit);
 router.get('/search', productController.getAllByTextSearch);
 router.post('/', productController.create);
 router.get('/', productController.getAll);

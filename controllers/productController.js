@@ -12,17 +12,12 @@ const apiError = require('../error/apiError');
 const path = require('path');
 const { Op } = require('sequelize');
 const Sequelize = require('sequelize');
-const { group } = require('console');
 const cloudinary = require('cloudinary').v2;
 
 class productController {
 	async create(req, res, next) {
 		try {
-			const { name, price, brandId, typeId, info, fileName } = req.body;
-			// const { img } = req.files;
-
-			// let fileName = uuidv4() + '.jpg'; // generate uniq filename
-			// img.mv(path.resolve(__dirname, '..', 'static', fileName)); // move file in a static folder, * __dirname - current loication, next params - path to static folder *
+			const { name, price, brandId, typeId, info, fileName, discountPrice } = req.body;
 
 			const product = await Product.create({
 				name,
@@ -30,6 +25,7 @@ class productController {
 				brandId,
 				typeId,
 				img: fileName,
+				...(discountPrice ? {discountPrice} : {})
 			});
 
 			if (info) {
@@ -46,6 +42,51 @@ class productController {
 			return res.json(product);
 		} catch (error) {
 			console.log(error);
+			next(apiError.badRequest(error.message));
+		}
+	}
+
+	async edit(req, res, next) {
+		try {
+			const { productId ,name, price, brandId, typeId, info,discountPrice } = req.body;
+
+			const product = await Product.findOne({
+				where: {
+					id: productId
+				}
+			});
+			product.name = name;
+			product.price = price;
+			product.brandId = brandId;
+			product.typeId = typeId;
+
+			if (discountPrice) {
+				product.discountPrice = discountPrice
+			} else {
+				product.discountPrice = null
+			}
+
+			await product.save();
+
+			if (info) {
+				await ProductInfo.destroy({
+					where: {
+						productId: product.id,
+					},
+				});
+
+				const parsedInfo = JSON.parse(info);
+				parsedInfo.forEach(infoEl => {
+					ProductInfo.create({
+						title: infoEl.title,
+						description: infoEl.description,
+						productId: product.id,
+					});
+				});
+			}
+
+			return res.json(product);
+		} catch (error) {
 			next(apiError.badRequest(error.message));
 		}
 	}
