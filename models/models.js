@@ -70,6 +70,7 @@ const Sizes = sequelize.define(
 const Order = sequelize.define('order', {
 	id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
 	status: { type: DataTypes.STRING, defaultValue: 'active' },
+	address: {type: DataTypes.STRING }
 });
 
 const OrderProducts = sequelize.define('order_products', {
@@ -79,6 +80,7 @@ const OrderProducts = sequelize.define('order_products', {
 const Comment = sequelize.define('comment', {
 	id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
 	value: { type: DataTypes.TEXT, require: true },
+	approved: {type: DataTypes.BOOLEAN, defaultValue: false}
 });
 
 User.hasMany(Comment);

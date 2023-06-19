@@ -16,7 +16,8 @@ const apiError = require('../error/apiError');
 class orderController {
 	async create(req, res, next) {
 		try {
-			const order = await Order.create({ userId: req.user.id });
+			const {address} = req.body;
+			const order = await Order.create({ userId: req.user.id, address });
 			const orderItems = await BasketProduct.findAll({
 				where: { basketId: req.user.id },
 			});
@@ -44,8 +45,6 @@ class orderController {
 					userId: req.user.id,
 				},
 			});
-
-			console.log(basket);
 
 			BasketProduct.destroy({
 				where: {
